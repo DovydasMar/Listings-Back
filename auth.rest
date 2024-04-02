@@ -1,0 +1,21 @@
+### REGISTER
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "name": "test",
+    "email": "test",
+    "password": "test",
+    "avatar_url": "test"
+}
+
+### LOGIN
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+
+    "email": "test",
+    "password": "test"
+
+}
