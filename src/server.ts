@@ -9,6 +9,7 @@ import adsRouter from './routes/adsRouter.js';
 import authRouter from './routes/authRouter.js';
 import townRouter from './routes/townRouter.js';
 import catRouter from './routes/categoryRouter.js';
+import userRouter from './routes/userRouter.js';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api', adsRouter);
 app.use('/auth', authRouter);
 app.use('/api', townRouter);
 app.use('/api', catRouter);
+app.use('/api', userRouter);
 
 app.use('*', (_req, res) => {
   res.status(404).json({ error: 'not found' });

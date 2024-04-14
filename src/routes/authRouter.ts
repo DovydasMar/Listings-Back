@@ -50,7 +50,7 @@ authRouter.post('/login', async (req, res) => {
   }
   // jei nera userio
   if (users.length === 0) {
-    return res.status(400).json({ error: 'User does not exist' });
+    return res.status(400).json({ error: 'Email or Password is incorrect (e)' });
   }
   const userObj = users[0];
   const isPasswordCorrect = await bcrypt.compare(password, userObj.password);
@@ -60,5 +60,58 @@ authRouter.post('/login', async (req, res) => {
   }
   // grazina success, email, name ir id
   res.json({ success: true, email: userObj.email, name: userObj.name, id: userObj.id });
+});
+
+authRouter.put('/update/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const { name, currentPassword: oldPassword, password: newPassword, avatar_url } = req.body;
+  const selectSql = 'SELECT * FROM users WHERE id = ?';
+  const [users, selectError] = await dbQueryWithData<UserObjType[]>(selectSql, [userId]);
+  // jei yra erroras
+  if (selectError) {
+    console.warn('select user error ===', selectError);
+    return res.status(500).json({ error: 'something went wrong pirmiau' });
+  }
+  // jei nera userio
+  if (users.length === 0) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+  const userObj = users[0];
+  const isPasswordCorrect = await bcrypt.compare(oldPassword, userObj.password);
+  if (!isPasswordCorrect) {
+    return res.status(400).json({ error: 'Current password is incorrect kazkodel' });
+  }
+  let insertSql = 'UPDATE users SET';
+  if (name) {
+    insertSql += ' name = ?,';
+  }
+  if (avatar_url) {
+    insertSql += ' avatar_url = ?,';
+  }
+  insertSql += ' password = ? WHERE id = ?';
+  console.log('insertSql ===', insertSql);
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  let argArr;
+  if (!name && !avatar_url) {
+    argArr = [hashedPassword, userId];
+  } else if (name && !avatar_url) {
+    argArr = [name, hashedPassword, userId];
+  } else if (!name && avatar_url) {
+    argArr = [avatar_url, hashedPassword, userId];
+  } else {
+    argArr = [name, avatar_url, hashedPassword, userId];
+  }
+  const [result, insertError] = await dbQueryWithData<ResultSetHeader>(insertSql, argArr);
+  console.log('argArr ===', argArr);
+  // jei yra erroras
+  if (insertError) {
+    console.warn('update user error ===', insertError);
+    return res.status(500).json({ error: 'something went wrong cia' });
+  }
+  // jei nepavyko atnaujinti
+  if (result.affectedRows === 0) {
+    return res.status(400).json({ error: 'User was not updated' });
+  }
+  res.json({ success: true, message: 'User updated' });
 });
 export default authRouter;

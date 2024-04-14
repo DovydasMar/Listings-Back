@@ -19,3 +19,15 @@ Content-Type: application/json
     "password": "test"
 
 }
+
+### update user
+PUT http://localhost:3000/auth/update/6
+Content-Type: application/json
+
+{
+    "name": "Dovydelis",
+    "email": "kazkoks@email.lt",
+    "password": "1234567",
+    "currentPassword": "123456",
+    "avatar_url": "test"
+}

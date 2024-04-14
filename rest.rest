@@ -3,6 +3,8 @@ GET http://localhost:3000/api/ads
 
 ### Get one ad
 GET http://localhost:3000/api/ads/1
+### Get one ad
+GET http://localhost:3000/api/ads/town/1
 
 ### POST new ad
 POST http://localhost:3000/api/ads
@@ -45,3 +47,9 @@ CONTENT-TYPE: application/json
 
 ### Random
 delete http://localhost:3000/ok/towns/1
+
+### get categories
+GET http://localhost:3000/api/categories
+
+### get users
+GET http://localhost:3000/api/users/7

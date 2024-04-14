@@ -6,7 +6,11 @@ import { ResultSetHeader } from 'mysql2';
 const townRouter = express.Router();
 
 townRouter.get('/towns', async (_req, res) => {
-  const sql = 'SELECT * FROM towns';
+  const sql = `SELECT towns.id, towns.name , towns.population, towns.area, towns.img_url, COUNT(ads.id) AS kiekis  FROM towns
+  LEFT JOIN ads 
+  ON towns.id = ads.town_id
+  GROUP BY towns.id, towns.name, towns.population, towns.area, towns.img_url
+  `;
   const [towns, error] = await dbQueryWithData<TownObjType[]>(sql);
   if (error) {
     console.warn('get towns error ===', error);
@@ -17,13 +21,14 @@ townRouter.get('/towns', async (_req, res) => {
 
 townRouter.get('/towns/:id', async (req, res) => {
   const { id } = req.params;
-  const sql = 'SELECT * FROM towns WHERE id = ?';
+  const sql = `SELECT towns.id, towns.name , towns.population, towns.area, towns.img_url, towns.img_1, towns.img_2, towns.img_3, towns.description  FROM towns
+  where id = ? AND isDeleted= 0`;
   const [towns, error] = await dbQueryWithData<TownObjType[]>(sql, [id]);
   if (error) {
     console.warn('get towns error ===', error);
     return res.status(500).json({ error: 'something went wrong' });
   }
-  res.json(towns);
+  res.json(towns[0]);
 });
 
 townRouter.post('/towns', async (req, res) => {

@@ -20,6 +20,13 @@ export type UserObjType = {
   avatar_url: string;
   created_at: string;
 };
+export type UserObjTypeNoPass = {
+  id: number;
+  name: string;
+  email: string;
+  avatar_url: string;
+  created_at: string;
+};
 export type TownObjType = {
   id: number;
   name: string;
